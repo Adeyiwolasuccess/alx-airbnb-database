@@ -124,5 +124,8 @@ The database will support the following core operations:
 
 ---
 
+## Entity-Relationship Diagram (ERD)
+![ERD](DatabaseERD.png)
+
 ## ✅ Final Notes
 This database schema supports the core features of an AirBnB-like system, is normalized to 3NF, and enforces data integrity through constraints and relationships.
