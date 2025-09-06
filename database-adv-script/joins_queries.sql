@@ -30,6 +30,10 @@ SELECT
 FROM Property p
 LEFT JOIN Review RIGHT 
       ON p.property_id = r.property_id;
+ORDER BY 
+   p.property_id ASC;
+   r.review_id ASC;
+
 
 -- ============================================
 -- FULL OUTER JOIN: Users with Bookings
