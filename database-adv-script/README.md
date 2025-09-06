@@ -1,32 +1,33 @@
-# Advanced SQL Joins – Airbnb Database
+# Advanced SQL – Airbnb Database
 
-This directory demonstrates the use of **SQL JOINs** with the Airbnb clone database schema.  
-The objective is to practice complex queries that retrieve related data across multiple tables using different types of JOINs.
+This directory demonstrates advanced SQL concepts with the Airbnb clone database schema.  
+The objective is to practice **JOINs, Subqueries, and Aggregations/Window Functions** to analyze data effectively.  
 
 ---
 
 ## 📂 Files
-
-- **`joins_queries.sql`** → Contains SQL queries demonstrating INNER JOIN, LEFT JOIN, and FULL OUTER JOIN.  
-- **`README.md`** → Documentation explaining the queries, usage, and expected results.  
+- **`joins_queries.sql`** → Demonstrates INNER JOIN, LEFT JOIN, FULL OUTER JOIN.  
+- **`subqueries.sql`** → Demonstrates non-correlated and correlated subqueries.  
+- **`aggregations_and_window_functions.sql`** → Demonstrates COUNT + GROUP BY and window functions (RANK, ROW_NUMBER).  
+- **`README.md`** → Documentation for all advanced SQL tasks.  
 
 ---
 
 ## 🎯 Learning Objectives
-
-By completing this task, you will be able to:
-
-- Understand how JOINs combine rows from multiple tables.  
-- Write **INNER JOIN** queries to retrieve only matched rows.  
-- Write **LEFT JOIN** queries to include unmatched rows from the left table.  
-- Simulate a **FULL OUTER JOIN** in MySQL using `UNION`.  
-- Apply these queries in real-world scenarios such as retrieving bookings, reviews, and user data.  
+By completing these tasks, you will be able to:
+- Understand and apply different types of **JOINs**.  
+- Write **non-correlated** and **correlated subqueries**.  
+- Use **aggregations** (COUNT, GROUP BY).  
+- Apply **window functions** (RANK, ROW_NUMBER).  
+- Analyze relational data in realistic backend scenarios.  
 
 ---
 
 ## 🔑 Queries Included
 
-### 1. INNER JOIN – Bookings with Users
+### 1) Joins
+
+#### a) INNER JOIN – Bookings with Users
 ```sql
 SELECT 
     b.booking_id,
@@ -40,16 +41,11 @@ SELECT
 FROM Booking b
 INNER JOIN User u 
     ON b.user_id = u.user_id;
---- 
-Explanation:
+Explanation: Returns all bookings linked to users. Excludes users with no bookings.
 
-Retrieves all bookings and the respective users who made them.
-
-Only shows bookings that have a matching user.
-
-Users without bookings are excluded.
-
-2. LEFT JOIN – Properties with Reviews
+b) LEFT JOIN – Properties with Reviews
+sql
+Copy code
 SELECT 
     p.property_id,
     p.title,
@@ -59,22 +55,17 @@ SELECT
     r.comment
 FROM Property p
 LEFT JOIN Review r 
-    ON p.property_id = r.property_id;
+    ON p.property_id = r.property_id
 ORDER BY 
-   p.property_id ASC;
-   r.review_id ASC;
----
-### Explanation:
+    p.property_id ASC,
+    r.review_id ASC;
+Explanation: Returns all properties and their reviews. Properties without reviews still appear (NULL review fields).
 
-Retrieves all properties and any reviews tied to them.
-
-Properties without reviews will still appear, with NULL values for review fields.
-
-Useful for generating a complete list of properties, regardless of feedback.
----
-3. FULL OUTER JOIN – Users with Bookings
--- MySQL does not support FULL OUTER JOIN directly.
--- We can simulate it using a UNION of LEFT JOIN and RIGHT JOIN.
+c) FULL OUTER JOIN – Users with Bookings (MySQL via UNION)
+sql
+Copy code
+-- MySQL doesn’t support FULL OUTER JOIN directly.
+-- Simulate with UNION of LEFT JOIN and RIGHT JOIN.
 
 SELECT 
     u.user_id,
@@ -93,80 +84,12 @@ SELECT
 FROM User u
 RIGHT JOIN Booking b 
     ON u.user_id = b.user_id;
+Explanation: Ensures all users and all bookings are shown, even unmatched ones.
 
-
-Explanation:
-
-Returns a union of users and bookings.
-
-Ensures the result includes:
-
-Users who have bookings.
-
-Users who don’t have bookings.
-
-Bookings not linked to any user.
-
-⚡ Usage Instructions
-
-Load the schema and seed data first:
-Make sure you’ve executed schema.sql (from database-script-0x01) and seed.sql (from database-script-0x02).
-
-Run the JOIN queries:
-From the MySQL shell or CLI, run:
-
-mysql -u <username> -p <database_name> < joins_queries.sql
-
-
-Check results manually:
-You can also copy-paste individual queries into MySQL Workbench or CLI to see outputs.
-
-✅ Expected Results
-
-INNER JOIN → Only shows bookings that are linked to valid users.
-
-LEFT JOIN → Shows all properties; reviews may appear as NULL if none exist.
-
-FULL OUTER JOIN → Shows all users and all bookings, including unmatched ones.
-
-📌 Example Use Cases
-
-INNER JOIN → “List all bookings made by registered users.”
-
-LEFT JOIN → “List all properties and include reviews if available.”
-
-FULL OUTER JOIN → “Show all users and all bookings, even if some don’t have a match.”
-
-🔗 Related Tasks
-
-database-script-0x01 → Schema definition (schema.sql).
-
-database-script-0x02 → Seed data (seed.sql).
-
-database-adv-script → Current directory with JOIN queries.
-
-👨‍💻 Author
-
-Part of the ALX ProDev Backend Engineering – Airbnb Clone project.
-
-
- Advanced SQL Subqueries – Airbnb Database
-
-This directory demonstrates the use of **subqueries** with the Airbnb clone database schema.  
-The objective is to practice both **non-correlated** and **correlated** subqueries.
-
----
-
-📂 Files
-- **`subqueries.sql`** → SQL queries implementing non-correlated and correlated subqueries.  
-- **`README.md`** → Documentation explaining the queries, usage, and expected results.  
-
----
-
- 🔑 Queries Included
-
-### 1. Non-Correlated Subquery – Properties with Avg Rating > 4.0
-```sql
+2) Subqueries
+a) Non-Correlated – Properties with Avg Rating > 4.0
+sql
+Copy code
 SELECT p.property_id, p.title, p.location, p.pricepernight
 FROM Property p
 WHERE p.property_id IN (
@@ -175,17 +98,9 @@ WHERE p.property_id IN (
     GROUP BY r.property_id
     HAVING AVG(r.rating) > 4.0
 );
-Explanation:
+Explanation: Finds properties whose average review rating exceeds 4.0.
 
-The inner query (SELECT r.property_id ...) groups reviews by property and computes the average rating.
-
-It only returns property IDs with AVG(rating) > 4.0.
-
-The outer query retrieves full property details for those IDs.
-
-Non-correlated → the inner query runs independently of the outer query.
-
-2. Correlated Subquery – Users with More Than 3 Bookings
+b) Correlated – Users with More Than 3 Bookings
 sql
 Copy code
 SELECT u.user_id, u.first_name, u.last_name, u.email
@@ -195,36 +110,69 @@ WHERE (
     FROM Booking b
     WHERE b.user_id = u.user_id
 ) > 3;
-Explanation:
+``]
+**Explanation:** For each user, counts their bookings. Returns users with more than 3.  
 
-For each user, the inner query counts the number of bookings they made.
+---
 
-The outer query checks if the count is greater than 3.
+### 3) Aggregations & Window Functions
 
-Correlated → the inner query depends on the outer query’s u.user_id.
+#### a) Aggregation – Total Number of Bookings Per User
+```sql
+SELECT 
+    u.user_id,
+    u.first_name,
+    u.last_name,
+    COUNT(b.booking_id) AS total_bookings
+FROM User u
+LEFT JOIN Booking b
+    ON u.user_id = b.user_id
+GROUP BY u.user_id, u.first_name, u.last_name
+ORDER BY total_bookings DESC;
+Explanation: Aggregates bookings per user. Includes users with zero bookings.
 
-⚡ Usage Instructions
-Ensure schema (schema.sql) and seed data (seed.sql) are loaded.
+b) Window Function – Rank Properties by Bookings
+sql
+Copy code
+SELECT 
+    p.property_id,
+    p.title AS property_name,
+    COUNT(b.booking_id) AS total_bookings,
+    RANK() OVER (ORDER BY COUNT(b.booking_id) DESC) AS property_rank,
+    ROW_NUMBER() OVER (ORDER BY COUNT(b.booking_id) DESC) AS row_num
+FROM Property p
+LEFT JOIN Booking b
+    ON p.property_id = b.property_id
+GROUP BY p.property_id, p.title
+ORDER BY total_bookings DESC;
+Explanation: Ranks properties by how many bookings they’ve received. Uses RANK() (ties share ranks) and ROW_NUMBER() (unique sequence).
 
-Run the queries in the MySQL shell or client:
+⚡ Usage
+Load schema and seed data:
 
 bash
 Copy code
-mysql -u <username> -p <database_name> < subqueries.sql
-Verify results:
+mysql -u <username> -p <db> < schema.sql
+mysql -u <username> -p <db> < seed.sql
+Run advanced queries:
 
-First query should list properties with average rating > 4.0.
-
-Second query should list users with more than 3 bookings.
-
+bash
+Copy code
+mysql -u <username> -p <db> < joins_queries.sql
+mysql -u <username> -p <db> < subqueries.sql
+mysql -u <username> -p <db> < aggregations_and_window_functions.sql
 ✅ Expected Results
-Non-Correlated Subquery → Returns properties that have strong reviews (avg rating > 4).
+INNER JOIN → Only matched bookings & users.
 
-Correlated Subquery → Returns frequent users with more than 3 bookings.
+LEFT JOIN → All properties; reviews may be NULL.
 
-📌 Learning Outcome
-Understand the difference between independent (non-correlated) and dependent (correlated) subqueries.
+FULL OUTER JOIN → All users and all bookings, even if unmatched.
 
-Apply subqueries to filter aggregated results.
+Non-Correlated Subquery → Properties with avg rating > 4.0.
 
-Strengthen SQL skills for real-world backend scenarios.
+Correlated Subquery → Users with > 3 bookings.
+
+Aggregations → Number of bookings per user.
+
+Window Functions → Properties ranked by booking count.
+
