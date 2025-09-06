@@ -150,20 +150,20 @@ database-adv-script → Current directory with JOIN queries.
 Part of the ALX ProDev Backend Engineering – Airbnb Clone project.
 
 
-# Advanced SQL Subqueries – Airbnb Database
+ Advanced SQL Subqueries – Airbnb Database
 
 This directory demonstrates the use of **subqueries** with the Airbnb clone database schema.  
 The objective is to practice both **non-correlated** and **correlated** subqueries.
 
 ---
 
-## 📂 Files
+📂 Files
 - **`subqueries.sql`** → SQL queries implementing non-correlated and correlated subqueries.  
 - **`README.md`** → Documentation explaining the queries, usage, and expected results.  
 
 ---
 
-## 🔑 Queries Included
+ 🔑 Queries Included
 
 ### 1. Non-Correlated Subquery – Properties with Avg Rating > 4.0
 ```sql
