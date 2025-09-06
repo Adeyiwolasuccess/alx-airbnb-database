@@ -148,3 +148,83 @@ database-adv-script → Current directory with JOIN queries.
 👨‍💻 Author
 
 Part of the ALX ProDev Backend Engineering – Airbnb Clone project.
+
+
+# Advanced SQL Subqueries – Airbnb Database
+
+This directory demonstrates the use of **subqueries** with the Airbnb clone database schema.  
+The objective is to practice both **non-correlated** and **correlated** subqueries.
+
+---
+
+## 📂 Files
+- **`subqueries.sql`** → SQL queries implementing non-correlated and correlated subqueries.  
+- **`README.md`** → Documentation explaining the queries, usage, and expected results.  
+
+---
+
+## 🔑 Queries Included
+
+### 1. Non-Correlated Subquery – Properties with Avg Rating > 4.0
+```sql
+SELECT p.property_id, p.title, p.location, p.pricepernight
+FROM Property p
+WHERE p.property_id IN (
+    SELECT r.property_id
+    FROM Review r
+    GROUP BY r.property_id
+    HAVING AVG(r.rating) > 4.0
+);
+Explanation:
+
+The inner query (SELECT r.property_id ...) groups reviews by property and computes the average rating.
+
+It only returns property IDs with AVG(rating) > 4.0.
+
+The outer query retrieves full property details for those IDs.
+
+Non-correlated → the inner query runs independently of the outer query.
+
+2. Correlated Subquery – Users with More Than 3 Bookings
+sql
+Copy code
+SELECT u.user_id, u.first_name, u.last_name, u.email
+FROM User u
+WHERE (
+    SELECT COUNT(*)
+    FROM Booking b
+    WHERE b.user_id = u.user_id
+) > 3;
+Explanation:
+
+For each user, the inner query counts the number of bookings they made.
+
+The outer query checks if the count is greater than 3.
+
+Correlated → the inner query depends on the outer query’s u.user_id.
+
+⚡ Usage Instructions
+Ensure schema (schema.sql) and seed data (seed.sql) are loaded.
+
+Run the queries in the MySQL shell or client:
+
+bash
+Copy code
+mysql -u <username> -p <database_name> < subqueries.sql
+Verify results:
+
+First query should list properties with average rating > 4.0.
+
+Second query should list users with more than 3 bookings.
+
+✅ Expected Results
+Non-Correlated Subquery → Returns properties that have strong reviews (avg rating > 4).
+
+Correlated Subquery → Returns frequent users with more than 3 bookings.
+
+📌 Learning Outcome
+Understand the difference between independent (non-correlated) and dependent (correlated) subqueries.
+
+Apply subqueries to filter aggregated results.
+
+Strengthen SQL skills for real-world backend scenarios.
