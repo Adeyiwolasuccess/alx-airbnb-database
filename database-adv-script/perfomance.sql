@@ -22,6 +22,7 @@ JOIN Property p
   ON b.property_id = p.property_id
 JOIN Payment pay
   ON pay.booking_id = b.booking_id;
+     AND pay.payment_id IS NOT NULL;
 
 
 /* =========================================================
